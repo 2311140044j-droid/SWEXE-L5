@@ -1,0 +1,10 @@
+<h2>ユーザ登録</h2>
+<% if @error %>
+  <p style="color:red"><%= @error %></p>
+<% end %>
+
+<%= form_with model: @user, local: true do |f| %>
+  ID: <%= f.text_field :uid %><br>
+  パスワード: <%= f.password_field :pass %><br>
+  <%= f.submit "登録" %>
+<% end %>
