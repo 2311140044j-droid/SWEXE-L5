@@ -1,6 +1,12 @@
 <h1>つぶやき一覧</h1>
 
 <% if logged_in? %>
+  <p>
+    ようこそ、<%= current_user.name || current_user.username %> さん！
+    |
+    <%= link_to 'プロフィール編集', edit_user_path(current_user), class: 'btn btn-secondary' %>
+  </p>
+
   <%= form_with(model: @tweet, url: tweets_path, local: true) do |f| %>
     <p><%= f.text_area :content, rows: 3, placeholder: 'いまどうしてる？' %></p>
     <%= f.submit 'つぶやく' %>

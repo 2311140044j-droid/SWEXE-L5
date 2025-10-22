@@ -4,7 +4,7 @@ class User < ApplicationRecord
   has_many :tweets, dependent: :destroy
   has_many :likes, dependent: :destroy
   has_many :liked_tweets, through: :likes, source: :tweet
-  has_one :profile, dependent: :destroy
+  #has_one :profile, dependent: :destroy
 
   validates :username, presence: true, uniqueness: true
   validates :password, length: { minimum: 6 }, if: -> { new_record? || password.present? }
