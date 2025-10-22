@@ -1,10 +1,32 @@
-<h2>ユーザ登録</h2>
-<% if @error %>
-  <p style="color:red"><%= @error %></p>
+<h1>新規ユーザー登録</h1>
+
+<%= form_with(model: @user, url: users_path, local: true) do |f| %>
+  <p>
+    <%= f.label :username, 'ユーザ名（ユニーク）' %><br>
+    <%= f.text_field :username %>
+  </p>
+
+  <p>
+    <%= f.label :name, '表示名' %><br>
+    <%= f.text_field :name %>
+  </p>
+
+  <p>
+    <%= f.label :password, 'パスワード' %><br>
+    <%= f.password_field :password %>
+  </p>
+
+  <p>
+    <%= f.label :password_confirmation, 'パスワード（確認）' %><br>
+    <%= f.password_field :password_confirmation %>
+  </p>
+
+  <p>
+    <%= f.submit '登録する', class: 'btn btn-primary' %>
+  </p>
 <% end %>
 
-<%= form_with model: @user, local: true do |f| %>
-  ID: <%= f.text_field :uid %><br>
-  パスワード: <%= f.password_field :pass %><br>
-  <%= f.submit "登録" %>
-<% end %>
+<p>
+  すでにアカウントをお持ちの方は
+  <%= link_to 'ログイン', login_path %> へ
+</p>

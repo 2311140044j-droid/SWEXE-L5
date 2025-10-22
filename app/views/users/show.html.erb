@@ -1,10 +1,3 @@
-<h2><%= @user.name %> さんのプロフィール</h2>
-
-<p><strong>ユーザーID:</strong> <%= @user.uid %></p>
-<p><strong>自己紹介:</strong><br><%= simple_format(@user.bio) %></p>
-
-<% if session[:login_uid] == @user.id %>
-  <p><%= link_to "プロフィールを編集", edit_user_path(@user) %></p>
-<% end %>
-
-<p><%= link_to "トップに戻る", root_path %></p>
+<h1><%= @user.name || @user.username %> さんのプロフィール</h1>
+<p><%= @user.bio.presence || '自己紹介はまだありません。' %></p>
+<%= link_to '編集', edit_user_path(@user) if current_user == @user %>

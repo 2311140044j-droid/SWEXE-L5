@@ -1,15 +1,12 @@
 Rails.application.routes.draw do
-  root "tweets#index"
+  root 'tweets#index'
 
-  get "/login" => "sessions#new"
-  post "/login" => "sessions#create"
-  delete "/logout" => "sessions#destroy"
+  get    '/login',  to: 'sessions#new'
+  post   '/login',  to: 'sessions#create'
+  delete '/logout', to: 'sessions#destroy'
 
-  resources :users, only: [:new, :create, :show, :edit, :update]
-
-  resources :tweets, only: [:index, :create] do
-    post "like", on: :member
-    post "unlike", on: :member
+  resources :users
+  resources :tweets do
+    resource :like, only: [:create, :destroy]
   end
 end
-

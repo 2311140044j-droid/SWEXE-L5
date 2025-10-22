@@ -1,45 +1,37 @@
 class UsersController < ApplicationController
-  before_action :set_user, only: [:show, :edit, :update]
+  before_action :require_login, only: [:edit, :update, :destroy]
+  before_action :set_user, only: [:edit, :update, :destroy]
+  before_action :authorize_user, only: [:edit, :update, :destroy]
 
   def new
     @user = User.new
   end
 
   def create
-    if User.find_by(uid: params[:user][:uid])
-      @error = "そのユーザIDはすでに存在します"
-      render "new"
+    @user = User.new(user_params)
+    if @user.save
+      session[:user_id] = @user.id
+      redirect_to root_path, notice: 'ユーザ登録が完了しました'
     else
-      @user = User.new(
-        uid: params[:user][:uid],
-        pass: BCrypt::Password.create(params[:user][:pass]),
-        name: params[:user][:uid] # 初期値としてuidを入れておく
-      )
-      if @user.save
-        redirect_to "/login"
-      else
-        render "new"
-      end
+      render :new, status: :unprocessable_entity
     end
-  end
-
-  def show
   end
 
   def edit
-    redirect_to root_path unless session[:login_uid] == @user.id
   end
 
   def update
-    if session[:login_uid] == @user.id
-      if @user.update(user_params)
-        redirect_to user_path(@user), notice: "プロフィールを更新しました"
-      else
-        render "edit", status: 422
-      end
+    if @user.update(user_params)
+      redirect_to root_path, notice: 'プロフィールを更新しました'
     else
-      redirect_to root_path
+      render :edit, status: :unprocessable_entity
     end
+  end
+
+  def destroy
+    @user.destroy
+    session.delete(:user_id)
+    redirect_to root_path, notice: 'アカウントを削除しました'
   end
 
   private
@@ -48,8 +40,11 @@ class UsersController < ApplicationController
     @user = User.find(params[:id])
   end
 
+  def authorize_user
+    redirect_to root_path, alert: '権限がありません' unless current_user == @user
+  end
+
   def user_params
-    params.require(:user).permit(:name, :bio)
+    params.require(:user).permit(:username, :name, :bio, :password, :password_confirmation)
   end
 end
-

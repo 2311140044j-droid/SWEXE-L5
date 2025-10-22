@@ -14,11 +14,10 @@ gem "solid_cable"
 gem "bootsnap", require: false
 gem "kamal", require: false
 gem "thruster", require: false
-gem "bcrypt"
+gem 'bcrypt', '~> 3.1.18'
 
-# ✅ データベース設定を環境別に分ける
 group :development, :test do
-  gem "sqlite3", "~> 1.6"
+  gem "sqlite3", "~> 2.1"
 end
 
 group :production do

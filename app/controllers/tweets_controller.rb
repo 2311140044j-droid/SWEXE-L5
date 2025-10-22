@@ -1,33 +1,44 @@
 class TweetsController < ApplicationController
+  before_action :require_login, except: [:index]
+  before_action :set_tweet, only: [:destroy]
+
   def index
-    @tweets = Tweet.all.includes(:user, :likes)
-    @user = User.find_by(id: session[:login_uid]) if session[:login_uid]
+    @tweets = Tweet.includes(:user, :likes).order(created_at: :desc)
+    @tweet = Tweet.new
   end
 
   def create
-    if session[:login_uid]
-      Tweet.create(
-        message: params[:message],
-        user_id: session[:login_uid] 
-      )
+    @tweet = current_user.tweets.build(tweet_params)
+    if @tweet.save
+      redirect_to root_path, notice: 'つぶやきを投稿しました'
+    else
+      @tweets = Tweet.includes(:user, :likes).order(created_at: :desc)
+      render :index, status: :unprocessable_entity
     end
-    redirect_to root_path
   end
 
-  def like
-    if session[:login_uid]
-      user = User.find(session[:login_uid])
-      Like.find_or_create_by(user_id: user.id, tweet_id: params[:id])
+  def destroy
+    if @tweet.user == current_user
+      @tweet.destroy
+      redirect_to root_path, notice: 'つぶやきを削除しました'
+    else
+      redirect_to root_path, alert: '他人のつぶやきは削除できません'
     end
-    redirect_to root_path
   end
 
-  def unlike
-    if session[:login_uid]
-      user = User.find(session[:login_uid])
-      like = Like.find_by(user_id: user.id, tweet_id: params[:id])
-      like.destroy if like
+  private
+
+  def tweet_params
+    params.require(:tweet).permit(:content)
+  end
+
+  def set_tweet
+    @tweet = Tweet.find(params[:id])
+  end
+
+  def require_login
+    unless logged_in?
+      redirect_to login_path, alert: 'ログインが必要です'
     end
-    redirect_to root_path
   end
 end

@@ -3,17 +3,18 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(uid: params[:uid])
-    if user && BCrypt::Password.new(user.pass) == params[:pass]
-      session[:login_uid] = user.id
-      redirect_to root_path
+    user = User.find_by(username: params[:username])
+    if user&.authenticate(params[:password])
+      session[:user_id] = user.id
+      redirect_to root_path, notice: 'ログインしました。'
     else
-      render "error", status: 422
+      flash.now[:alert] = 'ユーザ名またはパスワードが間違っています。'
+      render :new, status: :unprocessable_entity
     end
   end
 
   def destroy
-    session.delete(:login_uid)
-    redirect_to root_path
+    session.delete(:user_id)
+    redirect_to root_path, notice: 'ログアウトしました。'
   end
 end

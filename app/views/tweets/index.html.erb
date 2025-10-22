@@ -1,33 +1,32 @@
-<h2>つぶやき一覧</h2>
+<h1>つぶやき一覧</h1>
 
-<% if session[:login_uid] %>
-  <p>ようこそ <%= @user.uid %> さん！</p>
-
-  <%= form_with url: tweets_path, method: :post, local: true do |f| %>
-    <%= f.text_field :message, placeholder: "いまどうしてる？" %>
-    <%= f.submit "ツイート" %>
+<% if logged_in? %>
+  <%= form_with(model: @tweet, url: tweets_path, local: true) do |f| %>
+    <p><%= f.text_area :content, rows: 3, placeholder: 'いまどうしてる？' %></p>
+    <%= f.submit 'つぶやく' %>
   <% end %>
-
-  <%= link_to "ログアウト", logout_path, method: :delete %>
-  <%= link_to "プロフィール編集", edit_user_path(@user) %>
 <% else %>
-  <p><%= link_to "ログイン", login_path %></p>
+  <p>ログインするとつぶやきやいいねができます。</p>
 <% end %>
 
 <hr>
 
 <% @tweets.each do |tweet| %>
-  <div class="tweet" style="margin-bottom: 10px;">
-    <p>
-      <strong><%= tweet.user&.uid || "不明なユーザー" %></strong>:
-      <%= tweet.message %>
-    </p>
+  <div style="border:1px solid #ccc; padding:8px; margin-bottom:8px;">
+    <strong><%= tweet.user.name || tweet.user.username %></strong>
+    <small><%= tweet.created_at.strftime('%Y-%m-%d %H:%M') %></small>
+    <p><%= h(tweet.content) %></p>
+    <p>❤️ <%= tweet.likes.count %></p>
 
-    <% if session[:login_uid] %>
-      <% if tweet.likes.find_by(user_id: session[:login_uid]) %>
-        <%= button_to "いいね解除", unlike_tweet_path(tweet), method: :post %>
+    <% if logged_in? %>
+      <% if current_user.liked?(tweet) %>
+        <%= button_to 'いいねを外す', tweet_like_path(tweet), method: :delete %>
       <% else %>
-        <%= button_to "いいね", like_tweet_path(tweet), method: :post %>
+        <%= button_to 'いいね', tweet_like_path(tweet), method: :post %>
+      <% end %>
+
+      <% if tweet.user == current_user %>
+        <%= button_to '削除', tweet_path(tweet), method: :delete, data: { confirm: '本当に削除しますか？' } %>
       <% end %>
     <% end %>
   </div>
