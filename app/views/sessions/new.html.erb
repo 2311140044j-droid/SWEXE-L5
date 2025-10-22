@@ -1,8 +1,18 @@
 <h2>ログイン</h2>
+
 <%= form_with url: "/login", method: :post do |f| %>
-  ID: <%= f.text_field :uid %><br>
-  パスワード: <%= f.password_field :pass %><br>
+  <div>
+    <label>ID:</label><br>
+    <%= f.text_field :uid %>
+  </div>
+
+  <div>
+    <label>パスワード:</label><br>
+    <%= f.password_field :pass %>
+  </div>
+
   <%= f.submit "ログイン" %>
 <% end %>
 
 <p><%= link_to "ユーザ登録はこちら", new_user_path %></p>
+

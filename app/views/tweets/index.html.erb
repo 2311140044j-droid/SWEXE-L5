@@ -2,11 +2,14 @@
 
 <% if session[:login_uid] %>
   <p>ようこそ <%= @user.uid %> さん！</p>
-  <%= form_with url: "/tweets", method: :post do |f| %>
+
+  <%= form_with url: tweets_path, method: :post, local: true do |f| %>
     <%= f.text_field :message, placeholder: "いまどうしてる？" %>
     <%= f.submit "ツイート" %>
   <% end %>
+
   <%= link_to "ログアウト", logout_path, method: :delete %>
+  <%= link_to "プロフィール編集", edit_user_path(@user) %>
 <% else %>
   <p><%= link_to "ログイン", login_path %></p>
 <% end %>
@@ -14,20 +17,18 @@
 <hr>
 
 <% @tweets.each do |tweet| %>
-  <p>
-    <% if tweet.user %>
-      <strong><%= tweet.user.uid %>:</strong> 
-    <% else %>
-      <strong>（不明なユーザー）:</strong>
-    <% end %>
-    <%= tweet.message %><br>
+  <div class="tweet" style="margin-bottom: 10px;">
+    <p>
+      <strong><%= tweet.user&.uid || "不明なユーザー" %></strong>:
+      <%= tweet.message %>
+    </p>
 
     <% if session[:login_uid] %>
       <% if tweet.likes.find_by(user_id: session[:login_uid]) %>
-        <%= link_to "いいね解除", unlike_tweet_path(tweet), method: :post %>
+        <%= button_to "いいね解除", unlike_tweet_path(tweet), method: :post %>
       <% else %>
-        <%= link_to "いいね", like_tweet_path(tweet), method: :post %>
+        <%= button_to "いいね", like_tweet_path(tweet), method: :post %>
       <% end %>
     <% end %>
-  </p>
+  </div>
 <% end %>
