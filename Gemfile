@@ -17,7 +17,7 @@ gem "thruster", require: false
 gem 'bcrypt', '~> 3.1.18'
 
 group :development, :test do
-  gem "sqlite3", "~> 2.1"
+  gem "sqlite3", "~> 2.8"
 end
 
 group :production do
